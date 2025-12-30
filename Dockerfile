@@ -22,15 +22,20 @@ RUN groupadd -r deno && \
 # Set app directory
 WORKDIR /opt/app
 
-# Cache deps only (if you have imports)
-COPY deps.ts .
+# Set up cache directory
 ENV DENO_DIR=/v8cache
 RUN mkdir -p $DENO_DIR && chown deno:deno $DENO_DIR
-USER deno
-RUN deno cache deps.ts
 
-# Copy app LAST so Docker invalidates on change
-COPY main.ts .
+# Copy dependency manifests AND the entry point
+COPY deno.json deno.lock main.ts ./
+
+USER deno
+
+# Cache all dependencies
+RUN deno cache main.ts
+
+# Copy remaining source code (if any)
+COPY . .
 
 EXPOSE 8000
 
