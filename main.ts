@@ -8,19 +8,20 @@ BWRAP_BASE.push("--ro-bind", "/usr", "/usr"); // Read-only access to system bina
 BWRAP_BASE.push("--ro-bind", "/bin", "/bin");
 BWRAP_BASE.push("--ro-bind", "/lib", "/lib");
 BWRAP_BASE.push("--ro-bind-try", "/lib64", "/lib64"); // Works on Linux 64, not Mac Silicon
-BWRAP_BASE.push("--bind", "/v8cache", "/v8cache"); // Shared cache for Deno performance
+BWRAP_BASE.push("--tmpfs", "/v8cache"); // Deno cache
 BWRAP_BASE.push("--proc", "/proc"); // Virtual filesystem for process info
 BWRAP_BASE.push("--dev", "/dev"); // Necessary device nodes
-BWRAP_BASE.push("--unshare-user"); // Create new user namespace (isolates root)
-BWRAP_BASE.push("--uid", "0");
-BWRAP_BASE.push("--gid", "0");
+BWRAP_BASE.push("--unshare-net"); // Disables network access
+BWRAP_BASE.push("--unshare-user"); // Create new user namespace
+BWRAP_BASE.push("--uid", "1000");
+BWRAP_BASE.push("--gid", "1000");
 BWRAP_BASE.push("--unshare-ipc"); // Isolate Inter-Process Communication
 BWRAP_BASE.push("--unshare-pid"); // Isolate Process IDs (cannot see other system procs)
 BWRAP_BASE.push("--unshare-uts"); // Isolate hostname/domain name
 BWRAP_BASE.push("--new-session"); // Prevent terminal escape sequences
 BWRAP_BASE.push("--die-with-parent"); // Kill sandbox if the Deno process exits
-BWRAP_BASE.push("--dir", "/tmp"); // Create an empty, isolated /tmp
-BWRAP_BASE.push("--dir", "/home/deno"); // Create an empty home directory
+BWRAP_BASE.push("--tmpfs", "/tmp"); // Create an empty, isolated /tmp
+BWRAP_BASE.push("--tmpfs", "/home/deno"); // Create an empty home directory
 
 // Support languages and their commands
 const COMMANDS: Record<string, { cmd: string; args: string[]; ext: string }> = {
